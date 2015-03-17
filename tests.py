@@ -1,11 +1,12 @@
+from decimal import getcontext, Decimal
 import unittest
 
 TEST_EXPRESSIONS = [
-    ('igg_one', '1 2 +', 3),
-    ('igg_two', '4 2 /', 2),
-    ('igg_three', '2 3 4 + *', 14),
-    ('igg_four', '3 4 + 5 6 + *', 77),
-    ('igg_five', '13 4 -', 9)
+    ('igg_one', '1 2 +', '3'),
+    ('igg_two', '4 2 /', '2'),
+    ('igg_three', '2 3 4 + *', '14'),
+    ('igg_four', '3 4 + 5 6 + *', '77'),
+    ('igg_five', '13 4 -', '9'),
 ]
 
 
@@ -18,11 +19,11 @@ class RpnTest(unittest.TestCase):
       self.fail('Could not import calculator')
 
 
-
 def test_generator(expression, value):
   def test(self):
     from rpncalc import calculator
-    self.assertEqual(calculator(expression), value)
+    print('testing expression %s' % (expression,))
+    self.assertEqual(calculator(expression), Decimal(value))
   return test
 
 if __name__ == '__main__':
