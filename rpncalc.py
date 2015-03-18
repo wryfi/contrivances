@@ -12,7 +12,7 @@ logging.basicConfig(
 
 
 def main(expression):
-  if not re.match(r'[0-9*/+-]+', expression):
+  if not re.match(r'[0-9]+\s[\s0-9*/+^-]+', expression):
     raise SystemExit('Error: RPN expressions can only contain numbers and operators.')
   try:
     print(calculator(expression))
