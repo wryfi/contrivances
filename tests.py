@@ -3,6 +3,7 @@ import os
 import subprocess
 import unittest
 
+
 TEST_EXPRESSIONS = [
     ('igg_expr_one', '1 2 +', '3'),
     ('igg_expr_two', '4 2 /', '2'),
@@ -73,6 +74,7 @@ def test_generator(expression, value):
     from rpncalc import calculator
     self.assertEqual(calculator(expression), Decimal(value))
   return test
+
 
 if __name__ == '__main__':
   # generate test cases for each expression in TEST_EXPRESSIONS before running tests
