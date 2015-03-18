@@ -10,14 +10,6 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-calculationExpressions = {
-    '+' : lambda x, y : x + y,
-    '-' : lambda x, y: x - y,
-    '*': lambda x, y: x * y,
-    '/': lambda x, y: x / y,
-    '^': lambda x, y: x**y
-}
-
 
 def main(expression):
   if not re.match(r'[0-9*/+-]+', expression):
@@ -32,6 +24,13 @@ def calculator(expression):
   '''
   Takes a Reverse Polish Notation expression as a string and returns the result.
   '''
+  calculationExpressions = {
+      '+' : lambda x, y : x + y,
+      '-' : lambda x, y: x - y,
+      '*': lambda x, y: x * y,
+      '/': lambda x, y: x / y,
+      '^': lambda x, y: x**y
+  }
   parsed = re.split(r'\s+', expression)
   logging.debug(parsed)
   elements = []
