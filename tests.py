@@ -32,7 +32,7 @@ class RpnTest(unittest.TestCase):
       response = command.communicate()[0].decode()
       self.assertEqual(Decimal('2'), Decimal(response))
     else:
-      fail('rpncalc.py not found.')
+      self.fail('rpncalc.py not found.')
 
   def test_command_igg_err1(self):
     '''
@@ -47,7 +47,7 @@ class RpnTest(unittest.TestCase):
       response = command.communicate()[1]
       self.assertIn('not enough operands', response.decode())
     else:
-      fail('rpncalc.py not found.')
+      self.fail('rpncalc.py not found.')
 
   def test_command_igg_err2(self):
     '''
@@ -62,7 +62,7 @@ class RpnTest(unittest.TestCase):
       response = command.communicate()[1]
       self.assertIn('numbers and operators', response.decode())
     else:
-      fail('rpncalc.py not found.')
+      self.fail('rpncalc.py not found.')
 
 
 def test_generator(expression, value):
