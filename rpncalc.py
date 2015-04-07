@@ -1,62 +1,62 @@
+# -*- coding: utf-8 -*-
+
 from decimal import Decimal
-import logging
 import re
+from math import sqrt
 import sys
 
 
-logging.basicConfig(
-    format='%(asctime)s %(levelname)s [%(name)s:%(lineno)s] %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S',
-    level=logging.INFO
-)
-
-
 def main(expression):
-  if not re.match(r'[0-9]+\s[\s0-9*/+^-]+', expression):
+  if not re.match(r'^-*\d+\.{0,1}\d*\s[\s0-9*/+^√-]+', expression):
     raise SystemExit('Error: RPN expressions can only contain numbers and operators.')
   try:
-    print(calculator(expression))
+    expression = ReversePolishNotationExpression(expression)
+    print(expression.calculate())
   except RuntimeError as error:
     raise SystemExit(error)
 
 
-def calculator(expression):
-  '''
-  Takes a Reverse Polish Notation expression as a string and returns the result.
-  '''
-  calculationExpressions = {
-      '+' : lambda x, y : x + y,
-      '-' : lambda x, y: x - y,
-      '*': lambda x, y: x * y,
-      '/': lambda x, y: x / y,
-      '^': lambda x, y: x**y
-  }
-  parsed = re.split(r'\s+', expression)
-  logging.debug(parsed)
-  elements = []
-  for component in parsed:
-    # processing below does not check for missing spaces
-    if re.match(r'^\d*\.*\d+$', component):
-      elements.append(Decimal(component))
-    elif component in calculationExpressions.keys():
-      elements.append(component)
-  logging.debug(elements)
-  stack = []
-  for element in elements:
-    if type(element) is Decimal:
-      stack.append(element)
-    else:
-      if len(stack) < 2:
-        raise RuntimeError('There were not enough operands in the expression.')
+class ReversePolishNotationExpression(object):
+  def __init__(self, expression):
+    self.calculationExpressions = {
+        '√' : lambda x: Decimal(sqrt(x)),
+        '+' : lambda x, y: x + y,
+        '-' : lambda x, y: x - y,
+        '*' : lambda x, y: x * y,
+        '/' : lambda x, y: x / y,
+        '^' : lambda x, y: x ** y,
+    }
+    self.expression = expression
+    self.elements = self._parseExpression()
+    self.stack = []
+
+  def _parseExpression(self):
+    elements = []
+    parsed = re.split(r'\s+', self.expression)
+    for component in parsed:
+      if re.match(r'^-*\d+\.{0,1}\d*$', component):
+        elements.append(Decimal(component))
+      elif component in self.calculationExpressions.keys():
+        elements.append(component)
       else:
-        operands = [stack.pop()]
-        operands.insert(0, stack.pop())
-        result = calculationExpressions.get(element)(operands[0], operands[1])
-        stack.append(result)
-  if len(stack) > 1:
-    raise RuntimeError('There were not enough operators in the expression.')
-  logging.debug(stack)
-  return stack.pop()
+        raise RuntimeError('"%s" is neither an operator nor a decimal number' % (component,))
+    return elements
+
+  def calculate(self):
+    for element in self.elements:
+      if type(element) is Decimal:
+        self.stack.append(element)
+      else:
+        if len(self.stack) < 2 and element != '√':
+          raise RuntimeError('There were not enough operands in the expression.')
+        operands = [self.stack.pop()]
+        if element != '√':
+          operands.insert(0, self.stack.pop())
+        result = self.calculationExpressions.get(element)(*operands)
+        self.stack.append(result)
+    if len(self.stack) > 1:
+      raise RuntimeError('There were not enough operators in the expression.')
+    return round(self.stack.pop(), 2)
 
 
 if __name__ == '__main__':
