@@ -27,23 +27,21 @@ class ReversePolishNotationExpression(object):
         '^' : lambda x, y: x ** y,
     }
     self.expression = expression
-    self.elements = self._parseExpression()
 
   def _parseExpression(self):
-    elements = []
-    parsed = re.split(r'\s+', self.expression)
+    elements, parsed = [], re.split(r'\s+', self.expression)
     for component in parsed:
       if re.match(r'^-*\d+\.{0,1}\d*$', component):
         elements.append(Decimal(component))
       elif component in self.calculationExpressions.keys():
         elements.append(component)
       else:
-        raise RuntimeError('"%s" is neither an operator nor a decimal number' % (component,))
+        raise SyntaxError('"%s" is neither an operator nor a decimal number' % (component,))
     return elements
 
   def calculate(self):
     stack = []
-    for element in self.elements:
+    for element in self._parseExpression():
       if type(element) is Decimal:
         stack.append(element)
       else:
