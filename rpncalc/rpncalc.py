@@ -28,7 +28,6 @@ class ReversePolishNotationExpression(object):
     }
     self.expression = expression
     self.elements = self._parseExpression()
-    self.stack = []
 
   def _parseExpression(self):
     elements = []
@@ -43,20 +42,20 @@ class ReversePolishNotationExpression(object):
     return elements
 
   def calculate(self):
+    stack = []
     for element in self.elements:
       if type(element) is Decimal:
-        self.stack.append(element)
+        stack.append(element)
       else:
-        if len(self.stack) < 2 and element != '√':
-          raise RuntimeError('There were not enough operands in the expression.')
-        operands = [self.stack.pop()]
+        operands = [stack.pop()]
         if element != '√':
-          operands.insert(0, self.stack.pop())
-        result = self.calculationExpressions.get(element)(*operands)
-        self.stack.append(result)
-    if len(self.stack) > 1:
+          if len(stack) < 1:
+            raise RuntimeError('There were not enough operands in the expression.')
+          operands.insert(0, stack.pop())
+        stack.append(self.calculationExpressions.get(element)(*operands))
+    if len(stack) > 1:
       raise RuntimeError('There were not enough operators in the expression.')
-    return round(self.stack.pop(), 2)
+    return round(stack.pop(), 2)
 
 
 if __name__ == '__main__':
